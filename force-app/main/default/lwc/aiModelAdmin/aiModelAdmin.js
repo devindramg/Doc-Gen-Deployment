@@ -4,8 +4,8 @@ import { refreshApex } from '@salesforce/apex';
 import getModels from '@salesforce/apex/AIModelAdminController.getModels';
 import setDefaultModel from '@salesforce/apex/AIModelAdminController.setDefaultModel';
 
-// Define actions for the row actions menu
-const ACTIONS = [
+// Define actions for the row actions menu Devindrappa
+const ACTIONS = [   
     { label: 'Set as Default', name: 'set_default' }
 ];
 
