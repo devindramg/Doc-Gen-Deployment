@@ -1,0 +1,153 @@
+<!-- @description : Document Generation Wizard UI with AI Enhancements
+@autor : Anara AI (Updated)
+@last modified : 11-26-2025 -->
+<template>
+    <lightning-card class="doc-gen-card">
+        <!-- Header with custom styling -->
+        <div slot="title" class="slds-media slds-media_center">
+            <div class="slds-media__figure">
+                <lightning-icon icon-name="standard:document" size="small"></lightning-icon>
+            </div>
+            <div class="slds-media__body">
+                <h2 class="slds-card__header-title">Document Generation Wizard</h2>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Processing..." size="medium"></lightning-spinner>
+        </template>
+
+        <!-- ============================ SUCCESS SCREEN ============================= -->
+        <template if:true={generationComplete}>
+            <div class="success-container">
+                <lightning-icon icon-name="utility:success" size="large" variant="success"></lightning-icon>
+                <h3 class="slds-text-heading_medium slds-m-top_medium">Document Generated Successfully!</h3>
+                <p class="slds-m-vertical_medium">You can now view or download the document, or start a new one.</p>
+                <lightning-button-group>
+                    <lightning-button variant="brand" label="Download Document" title="Download the generated document file" onclick={handleDownloadDocument} icon-name="utility:download"></lightning-button>
+                    <lightning-button variant="neutral" label="View Document" title="View the generated document in the file previewer" onclick={handleViewDocument}></lightning-button>
+                    <lightning-button variant="success" label="Generate New" title="Start a new document generation" onclick={handleGenerateNew} icon-name="utility:add"></lightning-button>
+                </lightning-button-group>
+            </div>
+        </template>
+
+        <!-- ============================ WIZARD STEPS ============================= -->
+        <template if:false={generationComplete}>
+            <!-- ============================ STEP 1 – CONFIGURATION ============================= -->
+            <template if:true={isStep1}>
+                <div class="slds-p-around_large">
+                    <h3 class="slds-text-heading_medium slds-m-bottom_medium">Step 1: Select Template and Data</h3>
+                    <!-- Document Template Selection -->
+                    <lightning-combobox name="template" label="Select a Document Template" value={selectedTemplateId} placeholder="Choose a template..." options={templateOptions} onchange={handleTemplateChange} required></lightning-combobox>
+                    <!-- JSON Input - Increased size -->
+<!-- This is an example of what you would have to do, it's not recommended -->
+<div class="slds-form-element">
+  <label class="slds-form-element__label" for="json-textarea">Enter JSON Data</label>
+  <div class="slds-form-element__control">
+    <textarea 
+      id="json-textarea" 
+      class="slds-textarea" 
+      style="height: 150px;" 
+      onchange={handleJsonChange}>{jsonData}</textarea>
+  </div>
+</div>
+                    
+                    <!-- ============================ AI CLAUSE SUGGESTION BOX ============================= -->
+                    <div class="slds-box slds-theme_shade slds-m-top_large ai-section">
+                        <div class="slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+                            <!-- Section Header with Icon -->
+                            <div class="slds-col">
+                                <h3 class="slds-text-heading_small">
+                                    <lightning-icon icon-name="utility:einstein" size="small" class="slds-m-right_x-small"></lightning-icon>
+                                    AI Clause Suggestion
+                                </h3>
+                            </div>
+                            <!-- NEW: Enable AI Toggle Switch -->
+                            <div class="slds-col">
+                                <lightning-input type="toggle" label="Enable AI Features" checked={aiFeaturesEnabled} onchange={handleAIToggle} message-toggle-active="Enabled" message-toggle-inactive="Disabled"></lightning-input>
+                            </div>
+                        </div>
+                        <!-- Conditionally Rendered AI Section -->
+                        <template if:true={aiFeaturesEnabled}>
+                            <div class="slds-m-top_medium">
+                                <!-- AI Model Selection -->
+                                <lightning-combobox name="aiModel" label="Select AI Model for Suggestion" value={selectedAIModelId} placeholder="Choose an AI model..." options={aiModelOptions} onchange={handleAIModelChange}></lightning-combobox>
+                                <!-- Clause Prompt -->
+                                <lightning-textarea name="aiPrompt" label="Clause Prompt" value={aiPrompt} onchange={handleAIPromptChange} class="slds-m-top_small" placeholder="e.g., Suggest a standard confidentiality clause for a US-based NDA"></lightning-textarea>
+                                <!-- Suggest Clause Button -->
+                                <div class="slds-text-align_right slds-m-top_medium">
+                                    <lightning-button variant="brand-outline" label="Suggest Clause with AI" title="Generate a clause suggestion using the selected AI model" onclick={handleSuggestClauseClick} disabled={isGeneratingClause}></lightning-button>
+                                </div>
+                                <!-- AI Loading -->
+                                <template if:true={isGeneratingClause}>
+                                    <div class="slds-m-top_medium">
+                                        <lightning-spinner alternative-text="Generating suggestion..." size="small"></lightning-spinner>
+                                        <p class="slds-text-align_center slds-text-color_weak">AI is generating your clause...</p>
+                                    </div>
+                                </template>
+                                <!-- AI Generated Result -->
+                                <template if:true={generatedClause}>
+                                    <div class="slds-m-top_medium">
+                                        <label class="slds-form-element__label">Suggested Clause:</label>
+                                        <div class="slds-box slds-theme_default slds-p-around_small clause-box">
+                                            <lightning-formatted-rich-text value={generatedClause}></lightning-formatted-rich-text>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+
+                    <!-- Preview Button -->
+                    <div class="slds-m-top_large slds-text-align_right">
+                        <lightning-button variant="brand" label="Preview Document" onclick={handlePreviewClick}></lightning-button>
+                    </div>
+                </div>
+            </template>
+
+            <!-- ============================ STEP 2 – PREVIEW & GENERATE ============================= -->
+            <template if:true={isStep2}>
+                <div class="slds-p-around_large">
+                    <h3 class="slds-text-heading_medium slds-m-bottom_medium">Step 2: Review and Generate</h3>
+                    
+                    <!-- Template Validation Errors -->
+                    <template if:true={hasValidationErrors}>
+                        <div class="slds-box slds-theme_error slds-m-bottom_medium">
+                            <h4 class="slds-text-heading_small">Validation Errors Found</h4>
+                            <ul>
+                                <template for:each={validationErrors} for:item="error">
+                                    <li key={error}>{error}</li>
+                                </template>
+                            </ul>
+                        </div>
+                    </template>
+                    
+                    <!-- Accordion for Preview and JSON Data -->
+                    <lightning-accordion allow-multiple-sections-open active-section-name="preview">
+                        <lightning-accordion-section name="preview" label="Document Preview">
+                            <template if:true={previewHtml}>
+                                <div class="slds-box slds-theme_default preview-box">
+                                    <lightning-formatted-rich-text value={previewHtml}></lightning-formatted-rich-text>
+                                </div>
+                            </template>
+                        </lightning-accordion-section>
+                        
+                        <!-- NEW SECTION TO DISPLAY FULL JSON -->
+                        <lightning-accordion-section name="json_data" label="JSON Data for Review">
+                            <div class="slds-box slds-theme_default json-review-box">
+                                <pre>{jsonData}</pre>
+                            </div>
+                        </lightning-accordion-section>
+                    </lightning-accordion>
+                    
+                    <!-- Navigation Buttons -->
+                    <div class="slds-m-top_medium slds-text-align_right">
+                        <lightning-button variant="neutral" label="Back" onclick={handleBackClick}></lightning-button>
+                        <lightning-button variant="brand" label="Generate Final Document" onclick={handleGenerateClick} disabled={hasValidationErrors} class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </template>
+        </template>
+    </lightning-card>
+</template>

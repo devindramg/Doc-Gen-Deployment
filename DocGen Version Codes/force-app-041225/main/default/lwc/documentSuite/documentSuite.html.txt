@@ -1,0 +1,115 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-20-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <lightning-card title="Document Suite" icon-name="standard:document">
+        <lightning-tabset class="slds-m-around_medium" active-tab-value={activeTab}>
+            <!-- Templates Tab -->
+            <lightning-tab label="Templates" value="templates">
+                <div class="slds-p-around_medium">
+                    <lightning-button label="New Template" onclick={handleNewTemplate}></lightning-button>
+                    <div class="slds-grid slds-wrap slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                            <h3 class="slds-text-heading_small slds-m-bottom_small">Templates</h3>
+                            <lightning-datatable
+                                key-field="Id"
+                                data={templates}
+                                columns={templateColumns}
+                                onrowselection={handleTemplateRowSelection}
+                                max-row-selection="1"
+                                is-loading={isLoadingTemplates}
+                                hide-checkbox-column="true">
+                            </lightning-datatable>
+                        </div>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_2-of-3 slds-p-left_medium">
+                            <template if:false={isEditingTemplate}>
+                                <div class="slds-box slds-text-align_center slds-p-around_large">
+                                    <p>Select a template to edit or create a new one.</p>
+                                </div>
+                            </template>
+                            <template if:true={isEditingTemplate}>
+                                <!-- reuse existing child editor component -->
+                                <c-template-editor
+                                    template-record={selectedTemplate}
+                                    onsave={handleTemplateSave}
+                                    oncancel={handleTemplateCancel}>
+                                </c-template-editor>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+            </lightning-tab>
+
+            <!-- Generator Tab -->
+            <lightning-tab label="Generator" value="generator">
+                <div class="slds-p-around_medium">
+                    <c-document-generator
+                        onsuccessgenerate={handleGeneratorSuccess}
+                        onresetgenerator={handleGeneratorReset}>
+                    </c-document-generator>
+                </div>
+            </lightning-tab>
+
+            <!-- Viewer Tab -->
+            <lightning-tab label="Viewer" value="viewer">
+                <div class="slds-p-around_medium">
+                    <lightning-input
+                        label="Document Record Id"
+                        value={viewerRecordId}
+                        onchange={handleViewerRecordIdChange}
+                        placeholder="Enter Document Lifecycle Configuration record Id...">
+                    </lightning-input>
+                    <div class="slds-m-top_small slds-m-bottom_small">
+                        <lightning-button label="Load Document" variant="brand" onclick={loadDocumentForViewer}></lightning-button>
+                    </div>
+
+                    <template if:true={viewerIsLoading}>
+                        <lightning-spinner alternative-text="Loading document..." size="small"></lightning-spinner>
+                    </template>
+
+                    <template if:true={viewerLoaded}>
+                        <lightning-card title={documentTitle} icon-name="standard:document">
+                            <div class="slds-grid slds-p-around_medium">
+                                <div class="slds-col slds-size_2-of-3 slds-p-right_medium">
+                                    <h3 class="slds-text-heading_small slds-m-bottom_small">Document Content</h3>
+                                    <div class="slds-box slds-box_x-small slds-theme_default">
+                                        <lightning-formatted-rich-text value={renderedContent}></lightning-formatted-rich-text>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_1-of-3">
+                                    <h3 class="slds-text-heading_small slds-m-bottom_small">Signature Details</h3>
+                                    <div class="slds-box slds-box_x-small slds-theme_default slds-m-bottom_medium">
+                                        <p><strong>Status:</strong> {signatureStatus}</p>
+                                        <p><strong>Method:</strong> {signatureMethod}</p>
+                                        <p><strong>Signed Date:</strong>
+                                            <lightning-formatted-date-time value={signedDate}></lightning-formatted-date-time>
+                                        </p>
+                                    </div>
+
+                                    <h3 class="slds-text-heading_small slds-m-bottom_small">Audit Trail</h3>
+                                    <div class="slds-box slds-box_x-small slds-theme_default">
+                                        <template if:true={auditTrails}>
+                                            <lightning-datatable key-field="Id" data={auditTrails} columns={auditColumns}></lightning-datatable>
+                                        </template>
+                                        <template if:false={auditTrails}>
+                                            <p>No audit records found.</p>
+                                        </template>
+                                    </div>
+
+                                    <div class="slds-m-top_medium">
+                                        <lightning-button label="Download" onclick={handleDownload}></lightning-button>
+                                        <lightning-button variant="brand" label="Request Signature" onclick={handleRequestSignature}></lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                        </lightning-card>
+                    </template>
+                </div>
+            </lightning-tab>
+        </lightning-tabset>
+    </lightning-card>
+</template>

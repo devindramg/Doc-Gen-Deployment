@@ -1,0 +1,35 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-27-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <lightning-card title="AI Model Management" icon-name="standard:settings">
+        <div class="slds-p-around_medium">
+            <!-- Show spinner ONLY when loading -->
+            <template if:true={isLoading}>
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </template>
+
+            <!-- Show datatable when NOT loading and there is data -->
+            <template if:false={isLoading}>
+                <lightning-datatable
+                    key-field="developerName"
+                    data={tableData}
+                    columns={columns}
+                    onrowaction={handleRowAction}
+                    hide-checkbox-column>
+                </lightning-datatable>
+            </template>
+
+            <!-- Show error message if an error exists -->
+            <template if:true={error}>
+                <div class="slds-text-color_error slds-m-top_medium">
+                    Error loading models: {error.body.message}
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -1,0 +1,2 @@
+/* Default style to avoid empty file error */
+:host { display: block; }

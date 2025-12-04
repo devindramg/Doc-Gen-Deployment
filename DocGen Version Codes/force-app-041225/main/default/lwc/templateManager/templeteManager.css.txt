@@ -1,0 +1,3 @@
+.template-body-field {
+    height: 300px;
+}

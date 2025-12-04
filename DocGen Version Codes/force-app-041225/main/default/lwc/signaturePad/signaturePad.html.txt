@@ -1,0 +1,91 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-21-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <lightning-card icon-name="standard:signature">
+        <!-- VIEW 1: DATATABLE LIST -->
+        <template if:true={showListView}>
+            <h2 slot="title" class="slds-card__header-title">Select a Signature Request</h2>
+            <div class="slds-p-around_medium">
+                <template if:true={requests}>
+                    <lightning-datatable
+                        key-field="Id"
+                        data={requests}
+                        columns={columns}
+                        onrowselection={handleRowSelection}
+                        max-row-selection="1">
+                    </lightning-datatable>
+                </template>
+                <template if:true={isLoading}>
+                    <div class="slds-align_absolute-center slds-p-vertical_large">
+                        <lightning-spinner alternative-text="Loading..." variant="brand"></lightning-spinner>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <!-- VIEW 2: SIGNATURE CAPTURE INTERFACE -->
+        <template if:true={showSignatureView}>
+            <h2 slot="title" class="slds-card__header-title">Electronic Signature</h2>
+            
+            <div class="slds-box slds-theme_shade slds-m-bottom_medium slds-m-horizontal_medium">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Document for Signature:</h3>
+                <p><strong>{documentTitle}</strong></p>
+            </div>
+
+            <div class="slds-p-horizontal_medium">
+                <lightning-radio-group name="signatureMethod" label="Choose Signature Method" options={signatureMethodOptions} value={selectedMethod} onchange={handleMethodChange} required></lightning-radio-group>
+            </div>
+            
+            <div class="slds-p-horizontal_medium slds-m-vertical_medium">
+                <template if:true={isTypeMethod}>
+                    <lightning-input type="text" label="Type your full legal name" value={typedSignature} onchange={handleTypedSignatureChange} required></lightning-input>
+                    <template if:true={typedSignature}><div class="typed-signature-preview slds-m-top_small">{typedSignature}</div></template>
+                </template>
+                <template if:true={isDrawMethod}>
+                    <div class="signature-container">
+                        <label class="slds-form-element__label">Draw your signature below:</label>
+                        <div class="signature-pad-container">
+                            <canvas class="signature-canvas" lwc:dom="manual"></canvas>
+                        </div>
+                        <div class="slds-m-top_small">
+                            <lightning-button variant="neutral" label="Clear Signature" onclick={clearCanvas}></lightning-button>
+                        </div>
+                    </div>
+                </template>
+                <template if:true={isUploadMethod}>
+                    <lightning-file-upload label="Upload Signature Image" name="signatureUpload" accept=".png,.jpg,.jpeg" onuploadfinished={handleUploadFinished} multiple="false"></lightning-file-upload>
+                    <template if:true={uploadedSignature}><div class="slds-m-top_small"><img src={uploadedSignature} alt="Uploaded Signature" class="signature-preview-image" /></div></template>
+                </template>
+            </div>
+            
+            <div class="slds-p-horizontal_medium">
+                <div class="slds-grid slds-wrap slds-gutters">
+                    <div class="slds-col slds-size_1-of-2"><lightning-input type="text" label="Full Name" value={signerName} onchange={handleSignerNameChange} required></lightning-input></div>
+                    <div class="slds-col slds-size_1-of-2"><lightning-input type="email" label="Email Address" value={signerEmail} onchange={handleSignerEmailChange} required></lightning-input></div>
+                </div>
+            </div>
+            
+            <div class="slds-p-horizontal_medium slds-m-vertical_medium">
+                <lightning-input type="checkbox" label="I agree to the terms and confirm this electronic signature has the same legal effect as a handwritten signature." checked={termsAccepted} onchange={handleTermsChange} required></lightning-input>
+            </div>
+
+            <div slot="footer" class="slds-clearfix">
+                <div class="slds-float_right">
+                    <lightning-button variant="neutral" label="Back to List" onclick={handleBackToList} class="slds-m-right_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="Submit Signature" onclick={handleSubmitSignature} disabled={isSubmitDisabled}></lightning-button>
+                </div>
+            </div>
+        </template>
+        
+        <!-- Loading spinner for submit action -->
+        <template if:true={isSubmitting}>
+            <lightning-spinner alternative-text="Submitting signature..." size="medium"></lightning-spinner>
+        </template>
+
+    </lightning-card>
+</template>

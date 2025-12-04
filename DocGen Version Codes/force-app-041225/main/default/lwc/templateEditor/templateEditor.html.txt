@@ -1,0 +1,32 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-12-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <div class="slds-box slds-theme_default">
+        <h3 class="slds-text-heading_medium slds-m-bottom_medium">Template Editor</h3>
+
+        <lightning-input label="Template Name" value={editableTemplate.Name} onchange={handleChange} data-field="Name" required class="slds-m-bottom_small"></lightning-input>
+
+        <lightning-input-rich-text label="Template Body" value={editableTemplate.Body__c} onchange={handleChange} data-field="Body__c" label-visible
+            formats="['font', 'size', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'align', 'link', 'clean', 'table', 'header', 'code-block']">
+        </lightning-input-rich-text>
+
+        <div class="slds-grid slds-gutters slds-m-top_medium">
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-input label="Version" type="number" step="1" value={editableTemplate.Version__c} onchange={handleChange} data-field="Version__c"></lightning-input>
+            </div>
+            <div class="slds-col slds-size_1-of-2">
+                <lightning-checkbox-group name="IsActive" label="Status" options={activeOptions} value={activeValue} onchange={handleChange} data-field="IsActive__c"></lightning-checkbox-group>
+            </div>
+        </div>
+
+        <div class="slds-m-top_large slds-text-align_right">
+            <lightning-button label="Cancel" variant="neutral" onclick={handleCancelClick}></lightning-button>
+            <lightning-button label="Save" variant="brand" onclick={handleSaveClick} class="slds-m-left_x-small"></lightning-button>
+        </div>
+    </div>
+</template>

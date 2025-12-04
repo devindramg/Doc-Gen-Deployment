@@ -1,0 +1,177 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-21-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <!-- Document Selection Table -->
+    <div class="slds-card slds-p-around_medium">
+        <h2 class="slds-text-heading_medium slds-m-bottom_small">Select a Document</h2>
+
+        <lightning-layout multiple-rows>
+            <lightning-layout-item size="12">
+                <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                    <thead>
+                        <tr class="slds-line-height_reset">
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={documentRows} for:item="doc">
+                            <tr key={doc.Id}>
+                                <td>
+                                    <lightning-input type="radio"
+                                        name="docSelect"
+                                        value={doc.Id}
+                                        label={doc.Name}
+                                        onchange={handleDocSelect}>
+                                    </lightning-input>
+                                </td>
+                                <td>{doc.Status__c}</td>
+                                <td>
+                                    <lightning-formatted-date-time value={doc.CreatedDate}>
+                                    </lightning-formatted-date-time>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </lightning-layout-item>
+        </lightning-layout>
+    </div>
+
+    <!-- Modal -->
+    <template if:true={showModal}>
+        <section
+            role="dialog"
+            tabindex="-1"
+            aria-modal="true"
+            class="slds-modal slds-fade-in-open"
+        >
+            <div class="slds-modal__container">
+
+                <!-- Header -->
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium slds-hyphenate">
+                        {documentTitle}
+                    </h2>
+                </header>
+
+                <!-- BODY -->
+                <div class="slds-modal__content slds-p-around_medium">
+
+                    <!-- Action Buttons -->
+                    <div class="slds-m-bottom_medium slds-text-align_right">
+                        <lightning-button-group>
+                            <lightning-button
+                                label="Download"
+                                onclick={handleDownload}
+                                disabled={isLoading}>
+                            </lightning-button>
+
+                            <lightning-button
+                                variant="brand"
+                                label="Request Signature"
+                                onclick={handleRequestSignature}
+                                disabled={isLoading}>
+                            </lightning-button>
+                        </lightning-button-group>
+                    </div>
+
+                    <!-- Loading Spinner -->
+                    <template if:true={isLoading}>
+                        <div class="slds-p-around_medium slds-text-align_center">
+                            <lightning-spinner
+                                alternative-text="Loading document details..."
+                                size="medium">
+                            </lightning-spinner>
+                        </div>
+                    </template>
+
+                    <!-- Document Content / Signature / Audit -->
+                    <template if:false={isLoading}>
+                        <div class="slds-grid slds-wrap slds-p-around_small">
+
+                            <!-- LEFT: DOCUMENT CONTENT -->
+                            <div class="slds-col slds-size_2-of-3 slds-p-right_medium slds-m-bottom_medium">
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                    Document Content
+                                </h3>
+
+                                <div class="slds-box slds-box_x-small slds-theme_default document-content">
+                                    <lightning-formatted-rich-text value={renderedContent}>
+                                    </lightning-formatted-rich-text>
+                                </div>
+                            </div>
+
+                            <!-- RIGHT SIDE -->
+                            <div class="slds-col slds-size_1-of-3">
+
+                                <!-- SIGNATURE DETAILS -->
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                    Signature Details
+                                </h3>
+
+                                <div class="slds-box slds-box_x-small slds-theme_default slds-m-bottom_medium">
+                                    <template if:true={hasSignatureRequest}>
+                                        <p><strong>Status:</strong> {signatureStatus}</p>
+                                        <p><strong>Method:</strong> {signatureMethod}</p>
+                                        <p>
+                                            <strong>Signed Date:</strong>
+                                            <lightning-formatted-date-time value={signedDate}>
+                                            </lightning-formatted-date-time>
+                                        </p>
+                                    </template>
+
+                                    <template if:false={hasSignatureRequest}>
+                                        <p>No signature request has been sent for this document.</p>
+                                    </template>
+                                </div>
+
+                                <!-- AUDIT TRAIL -->
+                                <h3 class="slds-text-heading_small slds-m-bottom_small">
+                                    Audit Trail
+                                </h3>
+
+                                <div class="slds-box slds-box_x-small slds-theme_default">
+                                    <template if:true={auditTrails}>
+                                        <lightning-datatable
+                                            key-field="Id"
+                                            data={auditTrails}
+                                            columns={columns}
+                                            hide-checkbox-column="true">
+                                        </lightning-datatable>
+                                    </template>
+
+                                    <template if:false={auditTrails}>
+                                        <p>No audit records found.</p>
+                                    </template>
+                                </div>
+
+                            </div>
+                        </div>
+                    </template>
+
+                </div>
+
+                <!-- FOOTER -->
+                <footer class="slds-modal__footer">
+                    <lightning-button
+                        variant="neutral"
+                        label="Close"
+                        onclick={closeModal}>
+                    </lightning-button>
+                </footer>
+
+            </div>
+        </section>
+
+        <!-- Backdrop -->
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>

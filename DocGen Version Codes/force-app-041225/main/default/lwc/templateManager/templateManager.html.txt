@@ -1,0 +1,40 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 11-12-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <lightning-card title="Document Template Manager" icon-name="standard:document_template">
+        <lightning-button label="New Template" slot="actions" onclick={handleNew}></lightning-button>
+
+        <div class="slds-grid slds-wrap slds-p-around_medium">
+            <div class="slds-col slds-size_1-of_1 slds-medium-size_1-of_3">
+                <h3 class="slds-text-heading_small slds-m-bottom_small">Templates</h3>
+                <lightning-datatable
+                    key-field="Id"
+                    data={templates}
+                    columns={columns}
+                    onrowselection={handleRowSelection}
+                    max-row-selection="1"
+                    is-loading={isLoading}>
+                </lightning-datatable>
+            </div>
+            <div class="slds-col slds-size_1-of_1 slds-medium-size_2-of_3 slds-p-left_medium">
+                <template if:false={isEditing}>
+                    <div class="slds-box slds-text-align_center slds-p-around_large">
+                        <p>Select a template to edit or create a new one.</p>
+                    </div>
+                </template>
+                <template if:true={isEditing}>
+                    <c-template-editor
+                        template-record={selectedTemplate}
+                        onsave={handleSave}
+                        oncancel={handleCancel}>
+                    </c-template-editor>
+                </template>
+            </div>
+        </div>
+    </lightning-card>
+</template>

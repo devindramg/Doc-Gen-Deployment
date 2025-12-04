@@ -1,0 +1,49 @@
+<!--
+  @description       : 
+  @author            : ChangeMeIn@UserSettingsUnder.SFDoc
+  @group             : 
+  @last modified on  : 12-02-2025
+  @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
+-->
+<template>
+    <lightning-card title="My Pending Approvals" icon-name="standard:task">
+        <div class="slds-p-around_medium">
+            <template if:true={approvals.data}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={approvals.data}
+                    columns={columns}
+                    hide-checkbox-column="true"
+                    onrowaction={handleRowAction}>
+                </lightning-datatable>
+            </template>
+            <template if:false={approvals.data}>
+                <p>You have no pending approvals.</p>
+            </template>
+        </div>
+    </lightning-card>
+
+    <!-- Approval Modal -->
+    <template if:true={showModal}>
+        <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header">
+                    <h2 class="slds-text-heading_medium">Submit Approval</h2>
+                </header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <lightning-textarea
+                        label="Comments"
+                        value={comments}
+                        onchange={handleCommentsChange}>
+                    </lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer">
+                    <lightning-button label="Cancel" onclick={closeModal}></lightning-button>
+                    <lightning-button label="Reject" variant="destructive" onclick={handleReject} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button label="Approve" variant="brand" onclick={handleApprove} class="slds-m-left_x-small"></lightning-button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
