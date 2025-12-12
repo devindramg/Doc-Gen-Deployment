@@ -13,7 +13,7 @@ export default class DocumentGenerator extends NavigationMixin(LightningElement)
     @track currentStep = 'step1';
     @track isLoading = false;
     @track selectedTemplateId = '';
-    @track jsonData = '{\n "contact": {\n "Name": "John Doe",\n "IsUSCitizen": true\n }\n}';
+    @track jsonData = `{ "contact": { "Name": "Jane Doe", "Title": "Senior Software Engineer", "Email": "jane.doe@example.com", "IsUSCitizen": true, "Address": { "Street": "123 Innovation Drive", "City": "San Francisco", "State": "CA", "PostalCode": "94105", "Country": "USA" } }, "company": { "Name": "Tech Innovations Inc.", "Address": { "Street": "456 Market Street", "City": "San Francisco", "State": "CA", "PostalCode": "94105", "Country": "USA" }, "Website": "www.techinnovations.com" }, "agreement": { "DocumentType": "Employment Agreement", "Region": "US", "Role": "Employee", "EffectiveDate": "2025-12-04", "Version": "1.0", "ConfidentialityPeriod": "5 years" }}`;
     @track templateOptions = [];
     @track previewHtml = '';
     @track validationErrors = [];
@@ -132,6 +132,7 @@ export default class DocumentGenerator extends NavigationMixin(LightningElement)
                 aiClauseText: clauseToSend
             });
             if (result.success) {
+                console.log('Preview Result:', result);
                 this.previewHtml = result.renderedContent;
                 this.validationErrors = [];
                 this.currentStep = 'step2';

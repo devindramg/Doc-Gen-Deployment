@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ApexPage xmlns="http://soap.sforce.com/2006/04/metadata">
-    <label>Document Pdf Renderer 2</label>
-    <apiVersion>58.0</apiVersion>
+    <apiVersion>65.0</apiVersion>
+    <availableInTouch>false</availableInTouch>
+    <confirmationTokenRequired>false</confirmationTokenRequired>
+    <label>DocumentPdfRenderer2</label>
 </ApexPage>

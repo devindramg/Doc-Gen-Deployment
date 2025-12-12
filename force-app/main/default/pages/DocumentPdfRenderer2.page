@@ -1,3 +1,2 @@
-<apex:page controller="DocumentPdfRendererController" renderAs="pdf" showHeader="false" standardStylesheets="false">
-    <apex:outputText value="{!htmlContent}" escape="false" />
+<apex:page >
 </apex:page>

@@ -2,7 +2,7 @@
   @description       : 
   @author            : ChangeMeIn@UserSettingsUnder.SFDoc
   @group             : 
-  @last modified on  : 11-12-2025
+  @last modified on  : 12-04-2025
   @last modified by  : ChangeMeIn@UserSettingsUnder.SFDoc
 -->
 <template>
@@ -11,8 +11,50 @@
 
         <lightning-input label="Template Name" value={editableTemplate.Name} onchange={handleChange} data-field="Name" required class="slds-m-bottom_small"></lightning-input>
 
-        <lightning-input-rich-text label="Template Body" value={editableTemplate.Body__c} onchange={handleChange} data-field="Body__c" label-visible
-            formats="['font', 'size', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'align', 'link', 'clean', 'table', 'header', 'code-block']">
+        <!-- Configuration Fields -->
+        <div class="slds-grid slds-gutters slds-m-bottom_small">
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <lightning-combobox
+                    name="region"
+                    label="Region"
+                    value={editableTemplate.Region1__c}
+                    placeholder="Select Region"
+                    options={regionOptions}
+                    onchange={handleChange}
+                    data-field="Region1__c"
+                ></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <lightning-combobox
+                    name="role"
+                    label="Role"
+                    value={editableTemplate.Role__c}
+                    placeholder="Select Role"
+                    options={roleOptions}
+                    onchange={handleChange}
+                    data-field="Role__c"
+                ></lightning-combobox>
+            </div>
+            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-3">
+                <lightning-combobox
+                    name="contractType"
+                    label="Contract Type"
+                    value={editableTemplate.Contract_Type__c}
+                    placeholder="Select Type"
+                    options={contractTypeOptions}
+                    onchange={handleChange}
+                    data-field="Contract_Type__c"
+                ></lightning-combobox>
+            </div>
+        </div>
+
+        <lightning-input-rich-text
+            label="Template Body"
+            value={editableTemplate.Body__c}
+            onchange={handleBodyChange}
+            label-visible
+            formats="['font', 'size', 'bold', 'italic', 'underline', 'strike', 'list', 'indent', 'align', 'link', 'clean', 'table', 'header', 'code-block']"
+        >
         </lightning-input-rich-text>
 
         <div class="slds-grid slds-gutters slds-m-top_medium">
@@ -20,7 +62,14 @@
                 <lightning-input label="Version" type="number" step="1" value={editableTemplate.Version__c} onchange={handleChange} data-field="Version__c"></lightning-input>
             </div>
             <div class="slds-col slds-size_1-of-2">
-                <lightning-checkbox-group name="IsActive" label="Status" options={activeOptions} value={activeValue} onchange={handleChange} data-field="IsActive__c"></lightning-checkbox-group>
+                <lightning-input
+                    type="toggle"
+                    label="Is Active"
+                    checked={editableTemplate.IsActive__c}
+                    onchange={handleIsActiveChange}
+                    message-toggle-active="Active"
+                    message-toggle-inactive="Inactive"
+                ></lightning-input>
             </div>
         </div>
 
